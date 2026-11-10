@@ -1,0 +1,1 @@
+{"required":true,"package":"dev.shirokai.clear.mixin","compatibilityLevel":"JAVA_21","mixins":["BattleRegistryAccess","BattleEpochMixin"],"injectors":{"defaultRequire":1}}

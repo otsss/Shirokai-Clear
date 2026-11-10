@@ -1,0 +1,67 @@
+plugins { id 'fabric-loom' version '1.11.8'; id 'java' }
+group = 'dev.shirokai'
+version = '1.0.0'
+base { archivesName = 'Shirokai-Clear' }
+repositories {
+    mavenCentral()
+    maven { url = 'https://artefacts.cobblemon.com/releases' }
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+dependencies {
+    minecraft 'com.mojang:minecraft:1.21.1'
+    mappings loom.officialMojangMappings()
+    modImplementation 'net.fabricmc:fabric-loader:0.18.3'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.116.7+1.21.1'
+    modImplementation 'com.cobblemon:fabric:1.8.3+1.21.1'
+    modImplementation 'me.lucko:fabric-permissions-api:0.3.1'
+    include 'me.lucko:fabric-permissions-api:0.3.1'
+    minecraftServerLibraries 'com.ibm.icu:icu4j:71.1'
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+java { toolchain.languageVersion = JavaLanguageVersion.of(21); withSourcesJar() }
+tasks.withType(JavaCompile).configureEach { options.release = 21 }
+processResources { inputs.property 'version', project.version; filesMatching('fabric.mod.json') { expand version: project.version } }
+test { useJUnitPlatform() }
+tasks.withType(AbstractArchiveTask).configureEach { preserveFileTimestamps = false; reproducibleFileOrder = true }
+
+// The supplied EasyNPC binary is optional for development; never embedded in the mod.
+if (providers.gradleProperty('easyNpcJar').isPresent()) {
+    dependencies { modImplementation files(providers.gradleProperty('easyNpcJar').get()) }
+}
+sourceSets {
+    integration {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += output + compileClasspath + sourceSets.main.runtimeClasspath
+    }
+}
+loom {
+    mods {
+        shirokaiclear { sourceSet sourceSets.main }
+        if (gradle.startParameter.taskNames.any { it.tokenize(':').last() == 'runIntegration' }) {
+            shirokaiclear_test { sourceSet sourceSets.integration }
+        }
+    }
+    runs {
+        integration {
+            server()
+            source sourceSets.integration
+            runDir 'run-integration'
+            vmArg '-Dshirokaiclear.integration=true'
+        }
+    }
+}
+
+tasks.register('integrationJar', Jar) {
+    from sourceSets.integration.output
+    archiveClassifier = 'integration-unmapped'
+    destinationDirectory = layout.buildDirectory.dir('integration')
+}
+tasks.register('remapIntegrationJar', net.fabricmc.loom.task.RemapJarTask) {
+    dependsOn tasks.integrationJar
+    classpath.from(sourceSets.main.output)
+    inputFile = tasks.integrationJar.archiveFile
+    archiveFileName = 'shirokaiclear-integration.jar'
+    destinationDirectory = layout.buildDirectory.dir('integration')
+}

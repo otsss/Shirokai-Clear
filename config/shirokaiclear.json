@@ -1,0 +1,58 @@
+{
+  "enabled": true,
+  "intervalSeconds": 600,
+  "clearItems": true,
+  "clearWildPokemon": true,
+  "clearOtherEntities": false,
+  "items": {
+    "minimumAgeSeconds": 60,
+    "protectNamedItems": true,
+    "excludedItemIds": []
+  },
+  "pokemon": {
+    "protectBattles": true,
+    "protectPlayerPokemon": true,
+    "protectNpcPokemon": true,
+    "protectLegendary": true,
+    "protectMythical": true,
+    "protectShiny": true,
+    "protectRaidBosses": true,
+    "protectNamedPokemon": true,
+    "protectTaggedPokemon": true,
+    "minimumAgeSeconds": 120,
+    "excludedSpecies": []
+  },
+  "npcs": {
+    "protectEasyNPC": true,
+    "protectAllNPCs": true
+  },
+  "worlds": {
+    "enabledDimensions": [],
+    "excludedDimensions": []
+  },
+  "announcements": {
+    "enabled": true,
+    "showResults": true,
+    "warningSeconds": [
+      1,
+      2,
+      3,
+      5,
+      10,
+      60,
+      30
+    ],
+    "warningMessage": "§b✦ Shirokai §8» §7Limpeza de entidades em §e{seconds} segundos§7!",
+    "resultMessage": "§b✦ Shirokai §8» §aLimpeza concluída! §7Itens removidos: §f{items} §8| §7Pokémon removidos: §f{pokemon}"
+  },
+  "performance": {
+    "maxEntitiesPerBatch": 100,
+    "batchIntervalTicks": 1,
+    "onlyLoadedChunks": true
+  },
+  "logging": {
+    "enabled": true,
+    "logProtectedEntities": false,
+    "logSummary": true
+  }
+}
